@@ -1,0 +1,22 @@
+<button onclick="connect()">Connect Wallet</button>
+<button onclick="addLiquidity()">Add Liquidity</button>
+<button onclick="swap()">Swap</button>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.min.js"></script>
+
+<script>
+let signer, dex;
+
+async function connect() {
+  const provider = new ethers.BrowserProvider(window.ethereum);
+  signer = await provider.getSigner();
+}
+
+async function addLiquidity() {
+  await dex.addLiquidity("100","200");
+}
+
+async function swap() {
+  await dex.swapAforB("10");
+}
+</script>
