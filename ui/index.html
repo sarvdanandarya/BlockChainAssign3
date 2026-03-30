@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DEX</title>
+</head>
+
+<body>
+  <h2>Decentralized Exchange</h2>
+
+  <button onclick="connect()">Connect Wallet</button>
+  <p id="account"></p>
+
+  <h3>Add Liquidity</h3>
+  <input id="amountA" placeholder="TokenA amount">
+  <input id="amountB" placeholder="TokenB amount">
+  <button onclick="addLiquidity()">Add Liquidity</button>
+
+  <h3>Remove Liquidity</h3>
+  <input id="lpAmount" placeholder="LP amount">
+  <button onclick="removeLiquidity()">Remove</button>
+
+  <h3>Swap</h3>
+  <input id="swapAmount" placeholder="Amount">
+  <button onclick="swapAtoB()">A → B</button>
+  <button onclick="swapBtoA()">B → A</button>
+
+  <h3>Pool Info</h3>
+  <button onclick="getReserves()">Get Reserves</button>
+  <p id="reserves"></p>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.6.2/dist/ethers.min.js"></script>
+
+  <script>
+    let signer, dex;
+
+    const dexAddress = "YOUR_DEX_ADDRESS";
+
+    const dexABI = [
+      "function addLiquidity(uint,uint)",
+      "function removeLiquidity(uint)",
+      "function swapAforB(uint)",
+      "function swapBforA(uint)",
+      "function getReserves() view returns (uint,uint)"
+    ];
+
+    async function connect() {
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      signer = await provider.getSigner();
+
+      document.getElementById("account").innerText =
+        "Connected: " + await signer.getAddress();
+
+      dex = new ethers.Contract(dexAddress, dexABI, signer);
+    }
+
+    async function addLiquidity() {
+      const a = document.getElementById("amountA").value;
+      const b = document.getElementById("amountB").value;
+
+      await dex.addLiquidity(a, b);
+      alert("Liquidity Added");
+    }
+
+    async function removeLiquidity() {
+      const lp = document.getElementById("lpAmount").value;
+
+      await dex.removeLiquidity(lp);
+      alert("Liquidity Removed");
+    }
+
+    async function swapAtoB() {
+      const amt = document.getElementById("swapAmount").value;
+
+      await dex.swapAforB(amt);
+      alert("Swapped A → B");
+    }
+
+    async function swapBtoA() {
+      const amt = document.getElementById("swapAmount").value;
+
+      await dex.swapBforA(amt);
+      alert("Swapped B → A");
+    }
+
+    async function getReserves() {
+      const res = await dex.getReserves();
+      document.getElementById("reserves").innerText =
+        "A: " + res[0] + " | B: " + res[1];
+    }
+  </script>
+</body>
+</html>
